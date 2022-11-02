@@ -22,11 +22,9 @@ Options:
   --format <fmt>                Report format [default: stylish]
 DOC;
 
-// require('path/to/src/docopt.php');          на Хекслете в вопросах ментор сказал что не нужно вручную подключать файл библиотеки
-
 $args = Docopt::handle($doc, array('version'=>'GenDiff 1.0'));
-print_r($args);
-//foreach ($args as $k=>$v)
+print_r($args);              // непонятно почему не выводятся данные параметры
+//foreach ($args as $k=>$v)                          непонятно почему данные строки содержащиеся в README docopt ни на что не влияют при их отключении
 //    echo $k.': '.json_encode($v).PHP_EOL;
 
-echo "decd";
+echo "Something";                    // это тоже не выводится по непонятной причине
