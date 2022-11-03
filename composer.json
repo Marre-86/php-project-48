@@ -2,11 +2,16 @@
     "name": "hexlet/code",
     "description": "study project",
     "type": "project",
+    "license": "MIT",
     "autoload": {
+        "files": ["src/Differ.php", "src/Misc.php"],
         "psr-4": {
             "Hexlet\\Code\\": "src/"
         }
     },
+    "bin": [
+        "bin/gendiff"
+    ],
     "authors": [
         {
             "name": "Artem Pokhiliuk",
