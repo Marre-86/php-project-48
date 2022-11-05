@@ -22,7 +22,7 @@ function differ($pathToFile1, $pathToFile2, $format)
     }
     foreach ($array2 as $key2 => $value2) {
         if (!array_key_exists($key2, $array1)) {
-            $result[$key2 . '+'] = $value2;
+            $result[$key2 . '0+'] = $value2;
         }
     }
     ksort($result);
@@ -33,7 +33,7 @@ function differ($pathToFile1, $pathToFile2, $format)
         $value = (is_bool($value)) ? var_export($value, true) : $value;
         $strResult .= "  {$prefix} {$key}: {$value}\n";
     }
-    $strResult .= "}";
+    $strResult .= "}\n";
     return $strResult;
 }
 

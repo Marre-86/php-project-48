@@ -31,6 +31,7 @@ $args = Docopt::handle($doc, array('version'=>'GenDiff 1.0'));
 //    echo $k.': '.json_encode($v).PHP_EOL;
 
 $format = $args['--format'];
+// var_dump($format);
 $firstFilePath = realpath($args['<firstFile>']);
 $secondFilePath = realpath($args['<secondFile>']);
 if (!$firstFilePath or !$secondFilePath) {
