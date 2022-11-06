@@ -8,7 +8,7 @@ function differ($pathToFile1, $pathToFile2, $format)
 {
     $str1 = file_get_contents($pathToFile1, 0, null, null);
     $str2 = file_get_contents($pathToFile2, 0, null, null);
-    if ((pathinfo($pathToFile1, PATHINFO_EXTENSION) === 'json') && ((pathinfo($pathToFile2, PATHINFO_EXTENSION) === 'json'))) {
+    if ((pathinfo($pathToFile1, PATHINFO_EXTENSION) === 'json') && ((pathinfo($pathToFile2, PATHINFO_EXTENSION) === 'json'))) {  // phpcs:ignore
         $array1 = json_decode($str1, true);
         $array2 = json_decode($str2, true);
     } else {
