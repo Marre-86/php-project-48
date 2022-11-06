@@ -2,12 +2,19 @@
 
 namespace Gendiff\Differ;
 
+use Symfony\Component\Yaml\Yaml;
+
 function differ($pathToFile1, $pathToFile2, $format)
 {
     $str1 = file_get_contents($pathToFile1, 0, null, null);
     $str2 = file_get_contents($pathToFile2, 0, null, null);
-    $array1 = json_decode($str1, true);
-    $array2 = json_decode($str2, true);
+    if ((pathinfo($pathToFile1, PATHINFO_EXTENSION) === 'json') && ((pathinfo($pathToFile2, PATHINFO_EXTENSION) === 'json'))) {
+        $array1 = json_decode($str1, true);
+        $array2 = json_decode($str2, true);
+    } else {
+        $array1 = Yaml::parse($str1);
+        $array2 = Yaml::parse($str2);
+    }
     foreach ($array1 as $key1 => $value1) {
         if (array_key_exists($key1, $array2)) {
             if ($value1 === $array2[$key1]) {

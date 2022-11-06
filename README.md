@@ -9,3 +9,5 @@
 ## Compare 2 files
 ### For two json files
 [![asciicast](https://asciinema.org/a/g3MIMVOJVAt241WpOiz4DiYP7.svg)](https://asciinema.org/a/g3MIMVOJVAt241WpOiz4DiYP7)
+### For two yml files
+[![asciicast](https://asciinema.org/a/GjQ4zEfQDEKS9iECQwUQbr3mJ.svg)](https://asciinema.org/a/GjQ4zEfQDEKS9iECQwUQbr3mJ)
