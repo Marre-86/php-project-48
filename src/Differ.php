@@ -13,7 +13,8 @@ function differ($pathToFile1, $pathToFile2, $format)
             if ($value1 === $array2[$key1]) {
                 $result[$key1 . '0 '] = $value1;
             } else {
-                $result[$key1 . '1-'] = $value1;         // смысл первой цифры в постфиксе - корректная сортировка полей поменявших значение
+      // смысл первой цифры в постфиксе - корректная сортировка полей поменявших значение
+                $result[$key1 . '1-'] = $value1;
                 $result[$key1 . '2+'] = $array2[$key1];
             }
         } else {
@@ -37,9 +38,9 @@ function differ($pathToFile1, $pathToFile2, $format)
     return $strResult;
 }
 
-$pathToFile1 = 'files/file1.json';
-$pathToFile2 = 'files/file2.json';
-$pathToFile11 = '/home/marre/php-project-48/files/file1.json';
-$pathToFile12 = '/home/marre/php-project-48/files/file2.json';
+//$pathToFile1 = 'files/file1.json';
+//$pathToFile2 = 'files/file2.json';
+//$pathToFile11 = '/home/marre/php-project-48/files/file1.json';
+//$pathToFile12 = '/home/marre/php-project-48/files/file2.json';
 
 //echo differ($str1, $str2);
