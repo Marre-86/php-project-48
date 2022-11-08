@@ -2,19 +2,12 @@
 
 namespace Gendiff\Differ;
 
-use Symfony\Component\Yaml\Yaml;
+use Gendiff\Parsers;
 
 function differ($pathToFile1, $pathToFile2, $format)
 {
-    $str1 = file_get_contents($pathToFile1, 0, null, null);
-    $str2 = file_get_contents($pathToFile2, 0, null, null);
-    if ((pathinfo($pathToFile1, PATHINFO_EXTENSION) === 'json') && ((pathinfo($pathToFile2, PATHINFO_EXTENSION) === 'json'))) {  // phpcs:ignore
-        $array1 = json_decode($str1, true);
-        $array2 = json_decode($str2, true);
-    } else {
-        $array1 = Yaml::parse($str1);
-        $array2 = Yaml::parse($str2);
-    }
+    $array1 = Parsers\parseToArray($pathToFile1);
+    $array2 = Parsers\parseToArray($pathToFile2);
     foreach ($array1 as $key1 => $value1) {
         if (array_key_exists($key1, $array2)) {
             if ($value1 === $array2[$key1]) {
@@ -51,3 +44,39 @@ function differ($pathToFile1, $pathToFile2, $format)
 //$pathToFile12 = '/home/marre/php-project-48/files/file2.json';
 
 //echo differ($str1, $str2);
+
+function iter(array $array, $prefix, $depth)
+{
+    $strResult = "{\n";
+    $realPrefix = str_repeat($prefix, $depth);
+    $bracketPrefix = str_repeat($prefix, $depth - 1);
+    foreach ($array as $key => $value) {
+        if (!is_array($value)) {
+            $value = (is_bool($value)) ? var_export($value, true) : $value;
+            $strResult .= "{$realPrefix}{$key}: {$value}\n";
+        } else {
+            $depth += 1;
+            $value = iter($value, $prefix, $depth);
+            $strResult .= "{$realPrefix}{$key}: {$value}";
+        }
+    }
+    $strResult .= $bracketPrefix . "}\n";
+    return $strResult;
+}
+
+function stringify($input, $replacer = ' ', $margin = 1)
+{
+    if (!is_array($input)) {
+        $result = (is_bool($input)) ? var_export($input, true) : $input;
+        return $result;
+    } else {
+        $prefix = '';
+        for ($i = 1; $i <= $margin; $i++) {
+            $prefix .= $replacer;
+        }
+        $result = iter($input, $prefix, 1);
+//        $secondLastEOL = strrpos($almostResult, PHP_EOL, -2);   осталось от первой версии решения
+//        $result = substr_replace($almostResult, "}", $secondLastEOL + 1, 999);
+        return rtrim($result);
+    }
+}
