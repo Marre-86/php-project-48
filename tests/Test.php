@@ -30,5 +30,5 @@ class Test extends TestCase
         $shouldBe4 = file_get_contents(__DIR__ . "/fixtures/TestNestedResult1.txt", 0, null, null);
         $this->assertEquals($shouldBe4, differ($t4path1, $t4path2, null));
         echo "\n\033[32m Tests passed! \033[0m";
-     }
+    }
 }
