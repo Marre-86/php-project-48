@@ -7,7 +7,10 @@
 [![asciicast](https://asciinema.org/a/AjuOVgBTW7T8BNj16NdVxpKMx.svg)](https://asciinema.org/a/AjuOVgBTW7T8BNj16NdVxpKMx)
 
 ## Compare 2 files
-### For two json files
+### For two plain json files
 [![asciicast](https://asciinema.org/a/g3MIMVOJVAt241WpOiz4DiYP7.svg)](https://asciinema.org/a/g3MIMVOJVAt241WpOiz4DiYP7)
-### For two yml files
+### For two plain yml files
 [![asciicast](https://asciinema.org/a/GjQ4zEfQDEKS9iECQwUQbr3mJ.svg)](https://asciinema.org/a/GjQ4zEfQDEKS9iECQwUQbr3mJ)
+### For two nested files
+[![asciicast](https://asciinema.org/a/h7dEoxKSKhX2S89zMDACMdebr.svg)](https://asciinema.org/a/h7dEoxKSKhX2S89zMDACMdebr)
+

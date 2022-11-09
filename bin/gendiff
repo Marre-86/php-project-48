@@ -38,4 +38,5 @@ if (!$firstFilePath or !$secondFilePath) {
     echo "Something is wrong with the given paths!" . PHP_EOL;
     } else {
     echo differ($firstFilePath, $secondFilePath, $format);
+//    print_r(differ($firstFilePath, $secondFilePath, $format));
     }

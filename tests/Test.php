@@ -8,7 +8,7 @@ use function Gendiff\Differ\differ;
 
 class Test extends TestCase
 {
-    public function testDiffer(): void
+    public function testDifferPlain(): void
     {
         $t1path1 = __DIR__ . "/fixtures/file1.json";
         $t1path2 = __DIR__ . "/fixtures/file2.json";
@@ -22,6 +22,13 @@ class Test extends TestCase
         $t3path2 = __DIR__ . "/fixtures/file6.yml";
         $shouldBe3 = file_get_contents(__DIR__ . "/fixtures/TestResult1.txt", 0, null, null);
         $this->assertEquals($shouldBe3, differ($t3path1, $t3path2, null));
-        echo "\n\033[32m Tests passed! \033[0m";
     }
+    public function testDifferNested(): void
+    {
+        $t4path1 = __DIR__ . "/fixtures/nested1.json";
+        $t4path2 = __DIR__ . "/fixtures/nested2.json";
+        $shouldBe4 = file_get_contents(__DIR__ . "/fixtures/TestNestedResult1.txt", 0, null, null);
+        $this->assertEquals($shouldBe4, differ($t4path1, $t4path2, null));
+        echo "\n\033[32m Tests passed! \033[0m";
+     }
 }
