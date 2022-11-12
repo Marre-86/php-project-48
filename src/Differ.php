@@ -3,7 +3,16 @@
 namespace Gendiff\Differ;
 
 use Gendiff\Parsers;
-use Gendiff\Formatter;
+use Gendiff\Formatters;
+
+function differ($pathToFile1, $pathToFile2, $format)
+{
+    $inputArr1 = Parsers\parseToArray($pathToFile1);
+    $inputArr2 = Parsers\parseToArray($pathToFile2);
+    $diff = buildDiff($inputArr1, $inputArr2);
+//    return $diff;
+    return Formatters\format($diff, $format);
+}
 
 function isAssoc($arr)         // взял со Stackoverflow, чуток подправил
 {
@@ -73,13 +82,4 @@ function buildDiff(array $array1, array $array2)
         $result[$key] = $value;
     }
     return $result;
-}
-
-function differ($pathToFile1, $pathToFile2, $format)
-{
-    $inputArr1 = Parsers\parseToArray($pathToFile1);
-    $inputArr2 = Parsers\parseToArray($pathToFile2);
-    $diff = buildDiff($inputArr1, $inputArr2);
-//    return $diff;
-    return Formatter\stylish($diff, ' ', 2);
 }

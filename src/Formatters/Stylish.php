@@ -1,6 +1,6 @@
 <?php
 
-namespace Gendiff\Formatter;
+namespace Gendiff\Formatters\Stylish;
 
 function iter(array $array, $prefix, $prefixCount)
 {
@@ -23,16 +23,12 @@ function iter(array $array, $prefix, $prefixCount)
     return $strResult;
 }
 
-function stylish($input, $replacer = ' ', $margin = 1)
+function stylish($input, $replacer = ' ', $margin = 2)
 {
     if (!is_array($input)) {
         $result = (is_bool($input)) ? var_export($input, true) : $input;
         return $result;
     } else {
-//        $prefix = '';
-//        for ($i = 1; $i <= $margin; $i++) {
-//            $prefix .= $replacer;
-//        }
         $result = iter($input, $replacer, $margin);
 //       return rtrim($result);       ХЗ надо EOL в конце или нет
         return $result;
