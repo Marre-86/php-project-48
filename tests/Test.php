@@ -40,6 +40,13 @@ class Test extends TestCase
         $t6path2 = __DIR__ . "/fixtures/nested12.json";
         $shouldBe6 = file_get_contents(__DIR__ . "/fixtures/TestNestedResult2Plain.txt", 0, null, null);
         $this->assertEquals($shouldBe6, differ($t6path1, $t6path2, 'plain'));
+    }
+    public function testDifferNestedJSON(): void
+    {
+        $t7path1 = __DIR__ . "/fixtures/file7j.json";
+        $t7path2 = __DIR__ . "/fixtures/file8j.json";
+        $shouldBe7 = file_get_contents(__DIR__ . "/fixtures/TestNestedResult3Json.txt", 0, null, null);
+        $this->assertEquals($shouldBe7, differ($t7path1, $t7path2, 'json'));
         echo "\n\033[32m Tests passed! \033[0m";
     }
 }

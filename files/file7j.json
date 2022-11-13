@@ -1,0 +1,12 @@
+{
+  "Cat": {
+    "Name": "Alice",
+    "Age": 10
+  },
+  "Dog": {
+    "Name": "Bob",
+    "Age": 12
+  },
+  "Dragon": "Bailey"
+}
+

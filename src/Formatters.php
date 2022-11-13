@@ -4,6 +4,7 @@ namespace Gendiff\Formatters;
 
 use Gendiff\Formatters\Stylish;
 use Gendiff\Formatters\Plain;
+use Gendiff\Formatters\Json;
 
 function format($diff, $format)
 {
@@ -11,6 +12,8 @@ function format($diff, $format)
         return Stylish\stylish($diff);
     } elseif ($format === 'plain') {
         return Plain\plain($diff);
+    } elseif ($format === 'json') {
+        return Json\json($diff);
     } else {
         return "Invalid format!\n";
     }

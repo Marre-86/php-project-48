@@ -1,0 +1,36 @@
+{
+  "Cat": {
+    "status": "saved",
+    "value": {
+      "Age": {
+        "status": "removed",
+        "value": 10
+      },
+      "Name": {
+        "status": "updated",
+        "value": {
+          "before": "Alice",
+          "after": "Tasha"
+        }
+      }
+    }
+  },
+  "Dog": {
+    "status": "removed",
+    "value": {
+      "Name": "Bob",
+      "Age": 12
+    }
+  },
+  "Dragon": {
+    "status": "saved",
+    "value": "Bailey"
+  },
+  "Racoon": {
+    "status": "added",
+    "value": {
+      "Name": "Kesha",
+      "Age": 3
+    }
+  }
+}
