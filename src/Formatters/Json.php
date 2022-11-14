@@ -4,60 +4,72 @@ namespace Gendiff\Formatters\Json;
 
 use Gendiff\Misc;
 
+function json($input, $replacer = ' ', $margin = 2)
+{
+    $result = iter($input, $replacer, $margin, [null, null], null);
+    $result = "{\n" . $result . "\n}\n";
+        // выяснилось что json_decode делает всю работу по отсеиванию первых элементов с тем же key
+    $result = json_decode($result, true);
+//  $result = removeRedundant($result);        // и использование отдельной функции которую начал писать не понадобилось
+    $result = json_encode($result, JSON_PRETTY_PRINT);
+    return $result;
+}
+
 function iter(array $array, $prefix, $prefixCount, $previousItem, $previousStatus)
-{   
-    $result = array_map(function($key, $value) use ($prefix, $prefixCount, &$previousItem, &$previousStatus) {
+{
+    $result = array_map(function ($key, $value) use ($prefix, $prefixCount, &$previousItem, &$previousStatus) {
         $realPrefix = str_repeat($prefix, $prefixCount);
         $childrenPrefix = str_repeat($prefix, $prefixCount + 2);
         $realKey = substr($key, 2);
+        $realValue = normalizeValue($value);
         $status = ($realKey === $previousItem[0]) ? "updated" : getStatus($key);
         if (($previousStatus !== "removed") and ($previousStatus !== "added")) {
-            $string = "{$realPrefix}\"{$realKey}\": {\n{$childrenPrefix}\"status\": \"{$status}\",\n{$childrenPrefix}\"value\": ";   
-            $previousItem = (is_array($value)) ? [$realKey, '[complex value]'] : [$realKey, $value];
-            $string .= (Misc\isAssoc($value))  ? "{\n" . iter($value, $prefix, $prefixCount + 4, $previousItem, $status) . "\n{$childrenPrefix}}" : "\"{$value}\"";
+            if ($status === "updated") {
+                $updatedChildrenPrefix = str_repeat($prefix, $prefixCount + 4);
+                $realPreviousValue = normalizeValue($previousItem[1]);
+                $string = "{$realPrefix}\"{$realKey}\": {\n{$childrenPrefix}\"status\": \"{$status}\",\n{$childrenPrefix}\"value\": {\n{$updatedChildrenPrefix}\"before\": {$realPreviousValue},\n{$updatedChildrenPrefix}\"after\": {$realValue}\n{$childrenPrefix}}"; // phpcs:ignore 
+            } else {
+                $string = "{$realPrefix}\"{$realKey}\": {\n{$childrenPrefix}\"status\": \"{$status}\",\n{$childrenPrefix}\"value\": "; // phpcs:ignore 
+                $previousItem = (is_array($value)) ? [$realKey, '[complex value]'] : [$realKey, $value];
+                $string .= (Misc\isAssoc($value))  ? "{\n" . iter($value, $prefix, $prefixCount + 4, $previousItem, $status) . "\n{$childrenPrefix}}" : "{$realValue}"; //phpcs:ignore 
+            }
             $string .= "\n{$realPrefix}},";
         } else {
-            $string = "{$realPrefix}\"{$realKey}\": \"{$value}\",";
+            $string = "{$realPrefix}\"{$realKey}\": {$realValue},";
         }
-//        $string .= (($previousStatus !== "removed") and ($previousStatus !== "added")) ? "\n{$realPrefix}}," : "" ;
         return $string;
     }, array_keys($array), $array);
     $result = implode("\n", $result);
     return rtrim($result, ",");
 }
 
-function json($input, $replacer = ' ', $margin = 2)
+function normalizeValue($value)
 {
-    print_r($input);
-    $result = iter($input, $replacer, $margin, [null, null], null);
-    $result = "{\n" . $result . "\n}\n";
-    echo $result;
-    return "Check successfull!\n";
-}
-
-function getValue($inputValue)
-{
-    if (!Misc\isAssoc($inputValue)) {
-        return $inputValue;
-    } else {
-       $result = array_map(function($key, $value) {
-       $realKey = substr($key, 2);
-            $string = "\"{$realKey}\": \"{$value}\",\n";
-            return $string;
-        }, array_keys($inputValue), $inputValue);
-        $result = implode("\n", $result);
-        return rtrim($result, ",");
+    if (!is_array($value)) {
+        $normalizedValue = (in_array($value, ['true', 'false', 'null'])) ? $value : "\"{$value}\"";
+        if (intval($value)) {
+            $normalizedValue = $value;
+        }
     }
+    return $normalizedValue ?? null;
 }
 
 function getStatus($input)
 {
-        if ($input[0] === " ") {
-            $status = "saved";
-        } elseif ($input[0] === "+") {
-            $status = "added";
-        } elseif ($input[0] === "-") {
-            $status = "removed";
-        }
-        return $status;
+    if ($input[0] === " ") {
+        $status = "saved";
+    } elseif ($input[0] === "+") {
+        $status = "added";
+    } elseif ($input[0] === "-") {
+        $status = "removed";
+    }
+    return $status;
+}
+
+function removeRedundant($input)
+{
+    $result = array_filter($input, function ($value, $key) {
+        return ($value !== "Cat");
+    }, ARRAY_FILTER_USE_BOTH);
+    return $result;
 }
