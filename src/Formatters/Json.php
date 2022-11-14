@@ -49,8 +49,6 @@ function iter(array $array, $prefix, $prefixCount, $previousItem, $previousStatu
 
 function normalizeValue($value, $prefix, $prefixCount)
 {
-//    if (!is_array($value)) {
-    
     if (!is_array($value)) {
         $normalizedValue = (in_array($value, ['true', 'false', 'null'])) ? $value : "\"{$value}\"";
         if (is_numeric($value)) {
