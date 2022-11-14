@@ -8,7 +8,6 @@ function json($input, $replacer = ' ', $margin = 2)
 {
     $result = iter($input, $replacer, $margin, [null, null], null);
     $result = "{\n" . $result . "\n}\n";
-    echo $result;
         // выяснилось что json_decode делает всю работу по отсеиванию первых элементов с тем же key
     $result = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $result), true);
 //  $result = removeRedundant($result);        // и использование отдельной функции которую начал писать не понадобилось
