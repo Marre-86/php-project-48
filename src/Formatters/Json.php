@@ -8,10 +8,11 @@ function json($input, $replacer = ' ', $margin = 2)
 {
     $result = iter($input, $replacer, $margin, [null, null], null);
     $result = "{\n" . $result . "\n}\n";
+    echo $result;
         // выяснилось что json_decode делает всю работу по отсеиванию первых элементов с тем же key
-    $result = json_decode($result, true);
+    $result = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $result), true);
 //  $result = removeRedundant($result);        // и использование отдельной функции которую начал писать не понадобилось
-    $result = json_encode($result, JSON_PRETTY_PRINT);
+    $result = json_encode($result, JSON_PRETTY_PRINT) . "\n";
     return $result;
 }
 
@@ -21,12 +22,14 @@ function iter(array $array, $prefix, $prefixCount, $previousItem, $previousStatu
         $realPrefix = str_repeat($prefix, $prefixCount);
         $childrenPrefix = str_repeat($prefix, $prefixCount + 2);
         $realKey = substr($key, 2);
-        $realValue = normalizeValue($value);
+        if (!Misc\isAssoc($value)) {
+            $realValue = normalizeValue($value, $prefix, $prefixCount);
+        }
         $status = ($realKey === $previousItem[0]) ? "updated" : getStatus($key);
         if (($previousStatus !== "removed") and ($previousStatus !== "added")) {
             if ($status === "updated") {
                 $updatedChildrenPrefix = str_repeat($prefix, $prefixCount + 4);
-                $realPreviousValue = normalizeValue($previousItem[1]);
+                $realPreviousValue = normalizeValue($previousItem[1], $prefix, $prefixCount);
                 $string = "{$realPrefix}\"{$realKey}\": {\n{$childrenPrefix}\"status\": \"{$status}\",\n{$childrenPrefix}\"value\": {\n{$updatedChildrenPrefix}\"before\": {$realPreviousValue},\n{$updatedChildrenPrefix}\"after\": {$realValue}\n{$childrenPrefix}}"; // phpcs:ignore 
             } else {
                 $string = "{$realPrefix}\"{$realKey}\": {\n{$childrenPrefix}\"status\": \"{$status}\",\n{$childrenPrefix}\"value\": "; // phpcs:ignore 
@@ -35,6 +38,7 @@ function iter(array $array, $prefix, $prefixCount, $previousItem, $previousStatu
             }
             $string .= "\n{$realPrefix}},";
         } else {
+            $realValue = $realValue ?? '"[complex value]"';
             $string = "{$realPrefix}\"{$realKey}\": {$realValue},";
         }
         return $string;
@@ -43,15 +47,27 @@ function iter(array $array, $prefix, $prefixCount, $previousItem, $previousStatu
     return rtrim($result, ",");
 }
 
-function normalizeValue($value)
+function normalizeValue($value, $prefix, $prefixCount)
 {
+//    if (!is_array($value)) {
+    
     if (!is_array($value)) {
         $normalizedValue = (in_array($value, ['true', 'false', 'null'])) ? $value : "\"{$value}\"";
-        if (intval($value)) {
+        if (is_numeric($value)) {
             $normalizedValue = $value;
         }
+        return $normalizedValue;
+    } else {
+        $string = "[\n";
+        $prefixLevel1 = str_repeat($prefix, $prefixCount + 2);
+        $prefixLevel2 = str_repeat($prefix, $prefixCount + 4);
+        foreach ($value as $arrayItem) {
+            $string .= "{$prefixLevel2}\"{$arrayItem}\",\n";
+        }
+        $string = substr_replace($string, '', -2, 1);
+        $string .= "{$prefixLevel1}]";
+        return $string;
     }
-    return $normalizedValue ?? null;
 }
 
 function getStatus($input)

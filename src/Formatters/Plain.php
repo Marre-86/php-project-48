@@ -17,7 +17,7 @@ function iter($input, $path, $previous)
         if (!is_array($value)) {
             $realValue = (in_array($value, ['true', 'false', 'null'])) ? $value : "'{$value}'";
         }
-        $currentValue = (Misc\isAssoc($value)) ? '[complex value]' : $realValue;
+        $currentValue = (is_array($value)) ? '[complex value]' : $realValue;
         if ((Misc\isAssoc($value)) and ($key[0] === " ")) {
             $path .= $realKey . ".";
             $previous = (is_array($value)) ? [$realKey, '[complex value]'] : [$realKey, $realValue];
