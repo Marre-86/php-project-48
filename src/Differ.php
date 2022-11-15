@@ -5,7 +5,7 @@ namespace Differ\Differ;
 use Gendiff\Parsers;
 use Gendiff\Formatters;
 
-function gendiff($pathToFile1, $pathToFile2, $format)
+function gendiff($pathToFile1, $pathToFile2, $format = 'stylish')
 {
     $inputArr1 = Parsers\parseToArray($pathToFile1);
     $inputArr2 = Parsers\parseToArray($pathToFile2);
