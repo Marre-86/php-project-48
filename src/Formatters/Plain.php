@@ -6,7 +6,7 @@ use Gendiff\Misc;
 
 function plain($input)
 {
-    return iter($input, '', [null, null]) . "\n";
+    return iter($input, '', [null, null]);
 }
 
 function iter($input, $path, $previous)
