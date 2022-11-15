@@ -21,7 +21,7 @@ function iter(array $array, $prefix, $prefixCount)
     foreach ($array as $key => $value) {
         if (!is_array($value)) {
             $value = (is_bool($value)) ? var_export($value, true) : $value;
-            $strResult .= rtrim("{$realPrefix}{$key}: {$value}", " ") . "\n";
+            $strResult .= "{$realPrefix}{$key}: {$value}\n";
         } else {
             $prefixCount += 4;
             $value = iter($value, $prefix, $prefixCount);
