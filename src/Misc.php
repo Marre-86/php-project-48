@@ -2,14 +2,6 @@
 
 namespace Gendiff\Misc;
 
-function is_absolute_path($path)
-{
-    if ($path === null || $path === '') {
-        throw new Exception("Empty path");
-    }
-    return $path[0] === DIRECTORY_SEPARATOR || preg_match('~\A[A-Z]:(?![^/\\\\])~i', $path) > 0;
-}
-
 function isAssoc($arr)         // взял со Stackoverflow, чуток подправил
 {
     if ((!is_array($arr)) or (array() === $arr)) {
@@ -36,9 +28,20 @@ function flatten($tree)
 
 function removeRedundantItems($arr)
 {
+    $arrMended = [];
     $array = [];
     $result = [];
-    foreach ($arr as $item) {
+    foreach ($arr as $val) {    // 15.11.2022 пару часов провозился чтобы в итоге вот этот блок кода написать
+        if (strstr($val, PHP_EOL)) {
+            $splitArr = explode("\n", $val);
+            foreach ($splitArr as $v) {
+                $arrMended[] = $v;
+            }
+        } else {
+            $arrMended[] = $val;
+        }
+    }
+    foreach ($arrMended as $item) {
         $line = explode(" ", $item);
         $array[] = $line;
     }
@@ -49,7 +52,7 @@ function removeRedundantItems($arr)
     }
     foreach ($array as $item) {
         $string = implode(" ", $item);
-        $result[] = $string;
+            $result[] = $string;
     }
     return $result;
 }
