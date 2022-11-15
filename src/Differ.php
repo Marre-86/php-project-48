@@ -1,11 +1,11 @@
 <?php
 
-namespace Gendiff\Differ;
+namespace Differ\Differ;
 
 use Gendiff\Parsers;
 use Gendiff\Formatters;
 
-function differ($pathToFile1, $pathToFile2, $format)
+function gendiff($pathToFile1, $pathToFile2, $format)
 {
     $inputArr1 = Parsers\parseToArray($pathToFile1);
     $inputArr2 = Parsers\parseToArray($pathToFile2);
