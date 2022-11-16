@@ -21,9 +21,7 @@ function iter(array $array, $prefix, $prefixCount, $previousItem, $previousStatu
         $realPrefix = str_repeat($prefix, $prefixCount);
         $childrenPrefix = str_repeat($prefix, $prefixCount + 2);
         $realKey = substr($key, 2);
-        if (!Misc\isAssoc($value)) {
-            $realValue = normalizeValue($value, $prefix, $prefixCount);
-        }
+        $realValue = normalizeValue($value, $prefix, $prefixCount);
         $status = ($realKey === $previousItem[0]) ? "updated" : getStatus($key);
         if (($previousStatus !== "removed") and ($previousStatus !== "added")) {
             if ($status === "updated") {
@@ -37,7 +35,6 @@ function iter(array $array, $prefix, $prefixCount, $previousItem, $previousStatu
             }
             $string .= "\n{$realPrefix}},";
         } else {
-            $realValue = $realValue ?? '"[complex value]"';
             $string = "{$realPrefix}\"{$realKey}\": {$realValue},";
         }
         return $string;
@@ -54,7 +51,7 @@ function normalizeValue($value, $prefix, $prefixCount)
             $normalizedValue = $value;
         }
         return $normalizedValue;
-    } else {
+    } elseif (!Misc\isAssoc($value)) {
         $string = "[\n";
         $prefixLevel1 = str_repeat($prefix, $prefixCount + 2);
         $prefixLevel2 = str_repeat($prefix, $prefixCount + 4);
@@ -64,6 +61,8 @@ function normalizeValue($value, $prefix, $prefixCount)
         $string = substr_replace($string, '', -2, 1);
         $string .= "{$prefixLevel1}]";
         return $string;
+    } else {
+        return '"[complex value]"';
     }
 }
 
