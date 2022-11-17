@@ -26,11 +26,9 @@ function flatten(array $tree)
     return $result;
 }
 
-function removeRedundantItems(array $arr)
+function removeRedundantItems(array $input)
 {
-//    $array = [];
-    $result = [];
-    $arrMended = array_reduce($arr, function ($acc, $item) {
+    $arrMended = array_reduce($input, function ($acc, $item) {
         if (strstr($item, PHP_EOL) !== false) {
             $splitArr = explode("\n", $item);
             $acc = array_merge($acc, $splitArr);
@@ -39,18 +37,17 @@ function removeRedundantItems(array $arr)
         }
         return $acc;
     }, []);
-    foreach ($arrMended as $item) {
-        $line = explode(" ", $item);
-        $array[] = $line;
-    }
-    for ($i = 0; $i < count($array); $i++) {
-        if ((isset($array[$i + 1][1])) and ($array[$i][1] === $array[$i + 1][1])) {
-            unset($array[$i]);
+    $wordsArrays = array_map(fn($line) => explode(" ", $line), $arrMended);
+    $lineNumber = 0;
+    $wordsArraysFiltered = array_reduce($wordsArrays, function ($acc, $line) use ($wordsArrays, &$lineNumber) {
+        if ((isset($wordsArrays[$lineNumber + 1][1])) and ($wordsArrays[$lineNumber + 1][1] !== $line[1])) {
+            $acc[] = $line;
+        } elseif ($lineNumber === count($wordsArrays) - 1) {
+            $acc[] = $line;
         }
-    }
-    foreach ($array as $item) {
-        $string = implode(" ", $item);
-            $result[] = $string;
-    }
+        $lineNumber++;
+        return $acc;
+    }, []);
+    $result = array_map(fn($line) => implode(" ", $line), $wordsArraysFiltered);
     return $result;
 }
