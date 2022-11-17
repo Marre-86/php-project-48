@@ -10,7 +10,7 @@ function isAssoc($arr)         // взял со Stackoverflow, чуток под
     return array_keys($arr) !== range(0, count($arr) - 1);
 }
 
-function flatten($tree)
+function flatten(array $tree)
 {
     $result = array_reduce($tree, function ($acc, $item) {
         $newValue = is_array($item) ? flatten($item) : $item;
@@ -26,21 +26,19 @@ function flatten($tree)
     return $result;
 }
 
-function removeRedundantItems($arr)
+function removeRedundantItems(array $arr)
 {
-    $arrMended = [];
-    $array = [];
+//    $array = [];
     $result = [];
-    foreach ($arr as $val) {    // 15.11.2022 пару часов провозился чтобы в итоге вот этот блок кода написать
-        if (strstr($val, PHP_EOL)) {
-            $splitArr = explode("\n", $val);
-            foreach ($splitArr as $v) {
-                $arrMended[] = $v;
-            }
+    $arrMended = array_reduce($arr, function ($acc, $item) {
+        if (strstr($item, PHP_EOL) !== false) {
+            $splitArr = explode("\n", $item);
+            $acc = array_merge($acc, $splitArr);
         } else {
-            $arrMended[] = $val;
+            $acc[] = $item;
         }
-    }
+        return $acc;
+    }, []);
     foreach ($arrMended as $item) {
         $line = explode(" ", $item);
         $array[] = $line;
