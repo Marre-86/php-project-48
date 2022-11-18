@@ -17,9 +17,7 @@ function flatten(array $tree)
         if (!is_array($newValue)) {
             $acc[] = $newValue;
         } else {
-            foreach ($newValue as $item) {
-                $acc[] = $item;
-            }
+            $acc = array_merge($acc, $newValue);
         }
         return $acc;
     }, []);
