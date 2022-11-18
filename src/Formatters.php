@@ -6,7 +6,7 @@ use Gendiff\Formatters\Stylish;
 use Gendiff\Formatters\Plain;
 use Gendiff\Formatters\Json;
 
-function format($diff, $format)
+function format(array $diff, string $format)
 {
     if ($format === 'stylish') {
         return Stylish\stylish($diff);
