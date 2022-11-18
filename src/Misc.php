@@ -13,13 +13,14 @@ function isAssoc(mixed $arr)         // взял со Stackoverflow, чуток 
 function flatten(array $tree)
 {
     $result = array_reduce($tree, function ($acc, $item) {
+        $accNew = $acc;
         $newValue = is_array($item) ? flatten($item) : $item;
         if (!is_array($newValue)) {
-            $acc[] = $newValue;
+            $accNew[] = $newValue;
         } else {
-            $acc = array_merge($acc, $newValue);
+            $accNew = array_merge($acc, $newValue);
         }
-        return $acc;
+        return $accNew;
     }, []);
     return $result;
 }
@@ -27,24 +28,26 @@ function flatten(array $tree)
 function removeRedundantItems(array $input)
 {
     $arrMended = array_reduce($input, function ($acc, $item) {
+        $accNew = $acc;
         if (strstr($item, PHP_EOL) !== false) {
             $splitArr = explode("\n", $item);
-            $acc = array_merge($acc, $splitArr);
+            $accNew = array_merge($acc, $splitArr);
         } else {
-            $acc[] = $item;
+            $accNew[] = $item;
         }
-        return $acc;
+        return $accNew;
     }, []);
     $wordsArrays = array_map(fn($line) => explode(" ", $line), $arrMended);
     $lineNumber = 0;
     $wordsArraysFiltered = array_reduce($wordsArrays, function ($acc, $line) use ($wordsArrays, &$lineNumber) {
+        $accNew = $acc;
         if ((isset($wordsArrays[$lineNumber + 1][1])) and ($wordsArrays[$lineNumber + 1][1] !== $line[1])) {
-            $acc[] = $line;
+            $accNew[] = $line;
         } elseif ($lineNumber === count($wordsArrays) - 1) {
-            $acc[] = $line;
+            $accNew[] = $line;
         }
         $lineNumber++;
-        return $acc;
+        return $accNew;
     }, []);
     $result = array_map(fn($line) => implode(" ", $line), $wordsArraysFiltered);
     return $result;
