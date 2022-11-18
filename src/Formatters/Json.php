@@ -4,18 +4,18 @@ namespace Gendiff\Formatters\Json;
 
 use Gendiff\Misc;
 
-function json($input, $replacer = ' ', $margin = 2)
+function json(array $input, string $replacer = ' ', int $margin = 2)
 {
-    $result = iter($input, $replacer, $margin, [null, null], null);
-    $result = "{\n" . $result . "\n}\n";
+    $mainBody = iter($input, $replacer, $margin, [null, null], "");
+    $mainBodyWithBrackets = "{\n" . $mainBody . "\n}\n";
         // выяснилось что json_decode делает всю работу по отсеиванию первых элементов с тем же key
-    $result = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $result), true);
+    $resultFilteredArray = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $mainBodyWithBrackets), true);
 //  $result = removeRedundant($result);        // и использование отдельной функции которую начал писать не понадобилось
-    $result = json_encode($result, JSON_PRETTY_PRINT);
-    return $result;
+    $resultString = json_encode($resultFilteredArray, JSON_PRETTY_PRINT);
+    return $resultString;
 }
 
-function iter(array $array, $prefix, $prefixCount, $previousItem, $previousStatus)
+function iter(array $array, string $prefix, int $prefixCount, array $previousItem, string $previousStatus)
 {
     $result = array_map(function ($key, $value) use ($prefix, $prefixCount, &$previousItem, &$previousStatus) {
         $realPrefix = str_repeat($prefix, $prefixCount);
@@ -43,30 +43,29 @@ function iter(array $array, $prefix, $prefixCount, $previousItem, $previousStatu
     return rtrim($result, ",");
 }
 
-function normalizeValue($value, $prefix, $prefixCount)
+function normalizeValue($value, string $prefix, int $prefixCount)
 {
     if (!is_array($value)) {
-        $normalizedValue = (in_array($value, ['true', 'false', 'null'])) ? $value : "\"{$value}\"";
-        if (is_numeric($value)) {
-            $normalizedValue = $value;
-        }
+        $normalizedValue = ((in_array($value, ['true', 'false', 'null'], false)) or (is_numeric($value))) ?  $value : "\"{$value}\""; //phpcs:ignore
         return $normalizedValue;
     } elseif (!Misc\isAssoc($value)) {
-        $string = "[\n";
+        $openingBracket = "[\n";
         $prefixLevel1 = str_repeat($prefix, $prefixCount + 2);
         $prefixLevel2 = str_repeat($prefix, $prefixCount + 4);
-        foreach ($value as $arrayItem) {
-            $string .= "{$prefixLevel2}\"{$arrayItem}\",\n";
-        }
-        $string = substr_replace($string, '', -2, 1);
-        $string .= "{$prefixLevel1}]";
-        return $string;
+        $closingBracket = "{$prefixLevel1}]";
+        $mainBody = array_reduce($value, function ($acc, $item) use ($prefixLevel2) {
+            $acc .= "{$prefixLevel2}\"{$item}\",\n";
+            return $acc;
+        }, "");
+        $mainBodyNoLastComma = substr_replace($mainBody, '', -2, 1);
+        $normalizedValue = $openingBracket . $mainBodyNoLastComma . $closingBracket;
+        return $normalizedValue;
     } else {
         return '"[complex value]"';
     }
 }
 
-function getStatus($input)
+function getStatus(string $input)
 {
     if ($input[0] === " ") {
         $status = "saved";
@@ -74,14 +73,8 @@ function getStatus($input)
         $status = "added";
     } elseif ($input[0] === "-") {
         $status = "removed";
+    } else {
+        return null;
     }
     return $status;
-}
-
-function removeRedundant($input)
-{
-    $result = array_filter($input, function ($value, $key) {
-        return ($value !== "Cat");
-    }, ARRAY_FILTER_USE_BOTH);
-    return $result;
 }
