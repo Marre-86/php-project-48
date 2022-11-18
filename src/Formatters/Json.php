@@ -8,8 +8,9 @@ function json(array $input, string $replacer = ' ', int $margin = 2)
 {
     $mainBody = iter($input, $replacer, $margin, [null, null], "");
     $mainBodyWithBrackets = "{\n" . $mainBody . "\n}\n";
+    $mainBodyTrimmed = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $mainBodyWithBrackets);
         // выяснилось что json_decode делает всю работу по отсеиванию первых элементов с тем же key
-    $resultFilteredArray = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $mainBodyWithBrackets), true);
+    $resultFilteredArray = json_decode($mainBodyTrimmed, true);
 //  $result = removeRedundant($result);        // и использование отдельной функции которую начал писать не понадобилось
     $resultString = json_encode($resultFilteredArray, JSON_PRETTY_PRINT);
     return $resultString;
@@ -43,10 +44,10 @@ function iter(array $array, string $prefix, int $prefixCount, array $previousIte
     return rtrim($result, ",");
 }
 
-function normalizeValue($value, string $prefix, int $prefixCount)
+function normalizeValue(mixed $value, string $prefix, int $prefixCount)
 {
     if (!is_array($value)) {
-        $normalizedValue = ((in_array($value, ['true', 'false', 'null'], false)) or (is_numeric($value))) ?  $value : "\"{$value}\""; //phpcs:ignore
+        $normalizedValue = ((in_array($value, ['true', 'false', 'null'], true)) or (is_numeric($value))) ?  $value : "\"{$value}\""; //phpcs:ignore
         return $normalizedValue;
     } elseif (!Misc\isAssoc($value)) {
         $openingBracket = "[\n";
