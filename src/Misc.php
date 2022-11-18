@@ -2,7 +2,7 @@
 
 namespace Gendiff\Misc;
 
-function isAssoc($arr)         // взял со Stackoverflow, чуток подправил
+function isAssoc(mixed $arr)         // взял со Stackoverflow, чуток подправил
 {
     if ((!is_array($arr)) or (array() === $arr)) {
         return false;
