@@ -23,9 +23,8 @@ function iter(array $array, string $prefix, int $prefixCount)
             $formattedValue = (is_bool($value)) ? var_export($value, true) : $value;
             $formattedLine = "{$realPrefix}{$key}: {$formattedValue}\n";
         } else {
-            $prefixCount += 4;
-            $formattedValue = iter($value, $prefix, $prefixCount);
-            $prefixCount -= 4;
+            $newPrefixCount = $prefixCount + 4;
+            $formattedValue = iter($value, $prefix, $newPrefixCount);
             $formattedLine = "{$realPrefix}{$key}: {$formattedValue}";
         }
         return $formattedLine;
