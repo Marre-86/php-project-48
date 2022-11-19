@@ -16,9 +16,9 @@ function iter(array $input, string $path, array $previous)
         $currentKey = substr(strval($key), 2);              // отбрасываем служебные первые два символа
         $currentValue = normalizeValue($value);
         if ((Misc\isAssoc($value)) and ($key[0] === " ")) {
-            $path .= $currentKey . ".";
+            $pathExtended = $path . $currentKey . ".";
             $previous = (is_array($value)) ? [$currentKey, '[complex value]'] : [$currentKey, $currentValue];
-            $string = iter($value, $path, $previous);
+            $string = iter($value, $pathExtended, $previous);
         } elseif ($previous[0] === $currentKey) {
             $string = "Property '{$path}{$currentKey}' was updated. From {$previous[1]} to {$currentValue}";
         } elseif ($key[0] === "+") {
@@ -34,12 +34,12 @@ function iter(array $input, string $path, array $previous)
     return $string;
 }
 
-function normalizeValue($value)
+function normalizeValue(mixed $value)
 {
     if (is_numeric($value)) {
         return $value;
     } elseif (!is_array($value)) {
-        $quotedValue = (in_array($value, ['true', 'false', 'null'])) ? $value : "'{$value}'";
+        $quotedValue = (in_array($value, ['true', 'false', 'null'], true)) ? $value : "'{$value}'";
         return $quotedValue;
     } else {
         return '[complex value]';
