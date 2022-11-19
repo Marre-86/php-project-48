@@ -17,8 +17,8 @@ function iter(array $input, string $path, array $previous)
         $currentValue = normalizeValue($value);
         if ((Misc\isAssoc($value)) and ($key[0] === " ")) {
             $pathExtended = $path . $currentKey . ".";
-            $previous = (is_array($value)) ? [$currentKey, '[complex value]'] : [$currentKey, $currentValue];
-            $string = iter($value, $pathExtended, $previous);
+            $newPrevious = (is_array($value)) ? [$currentKey, '[complex value]'] : [$currentKey, $currentValue];
+            $string = iter($value, $pathExtended, $newPrevious);
         } elseif ($previous[0] === $currentKey) {
             $string = "Property '{$path}{$currentKey}' was updated. From {$previous[1]} to {$currentValue}";
         } elseif ($key[0] === "+") {
