@@ -22,14 +22,7 @@ function flatten(array $tree)
 function removeRedundantItems(array $input)
 {
     $arrMended = array_reduce($input, function ($acc, $item) {
-        $accNew = $acc;
-        if (strstr($item, PHP_EOL) !== false) {
-            $splitArr = explode("\n", $item);
-            $accNew = array_merge($acc, $splitArr);
-        } else {
-            $accNew[] = $item;
-        }
-        return $accNew;
+        return array_merge($acc, (strstr($item, PHP_EOL) !== false) ? explode("\n", $item) : [$item]);
     }, []);
     $wordsArrays = array_map(fn($line) => explode(" ", $line), $arrMended);
     $lineNumber = 0;
