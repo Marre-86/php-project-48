@@ -8,7 +8,7 @@ function json(array $input, string $replacer = ' ', int $margin = 2)
 {
     $mainBody = iter($input, $replacer, $margin, [null, null], "");
     $mainBodyWithBrackets = "{\n" . $mainBody . "\n}\n";
-    $mainBodyTrimmed = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $mainBodyWithBrackets);
+    $mainBodyTrimmed = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $mainBodyWithBrackets) ?? "false";
         // выяснилось что json_decode делает всю работу по отсеиванию первых элементов с тем же key
     $resultFilteredArray = json_decode($mainBodyTrimmed, true);
 //  $result = removeRedundant($result);        // и использование отдельной функции которую начал писать не понадобилось
