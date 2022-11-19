@@ -13,14 +13,8 @@ function isAssoc(mixed $arr)         // взял со Stackoverflow, чуток 
 function flatten(array $tree)
 {
     $result = array_reduce($tree, function ($acc, $item) {
-        $accNew = $acc;
         $newValue = is_array($item) ? flatten($item) : $item;
-        if (!is_array($newValue)) {
-            $accNew[] = $newValue;
-        } else {
-            $accNew = array_merge($acc, $newValue);
-        }
-        return $accNew;
+        return array_merge($acc, is_array($newValue) ? $newValue : [$newValue]);
     }, []);
     return $result;
 }

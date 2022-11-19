@@ -5,7 +5,7 @@ namespace Differ\Differ;
 use Gendiff\Parsers;
 use Gendiff\Formatters;
 
-function gendiff($pathToFile1, $pathToFile2, $format = 'stylish')
+function gendiff(string $pathToFile1, string $pathToFile2, string $format = 'stylish')
 {
     $inputArr1 = Parsers\parseToArray($pathToFile1);
     $inputArr2 = Parsers\parseToArray($pathToFile2);
@@ -14,7 +14,7 @@ function gendiff($pathToFile1, $pathToFile2, $format = 'stylish')
     return Formatters\format($diff, $format);
 }
 
-function isAssoc($arr)         // взял со Stackoverflow, чуток подправил
+function isAssoc(mixed $arr)         // взял со Stackoverflow, чуток подправил
 {
     if ((!is_array($arr)) or (array() === $arr)) {
         return false;
