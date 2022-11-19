@@ -4,16 +4,16 @@ namespace Gendiff\Formatters\Plain;
 
 use Gendiff\Misc;
 
-function plain($input)
+function plain(array $input)
 {
     return iter($input, '', [null, null]);
 }
 
-function iter($input, $path, $previous)
+function iter(array $input, string $path, array $previous)
 {
     $result = array_map(function ($key, $value) use ($path, &$previous) {
         $string = null;
-        $currentKey = substr($key, 2);              // отбрасываем служебные первые два символа
+        $currentKey = substr(strval($key), 2);              // отбрасываем служебные первые два символа
         $currentValue = normalizeValue($value);
         if ((Misc\isAssoc($value)) and ($key[0] === " ")) {
             $path .= $currentKey . ".";
