@@ -3,7 +3,10 @@
     "Name": "Tasha"
   },
   "Racoon": {
-    "Name": "Kesha",
+    "Name": {
+      "old": "Kesha",
+      "new": "Masha"
+    },
     "Age": 3
   },
   "Dragon": "Bailey",

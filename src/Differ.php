@@ -24,14 +24,13 @@ function isAssoc(mixed $arr)         // взял со Stackoverflow, чуток 
 
 function getChildren(array $array)         // весь смысл данной ф-ии - корректная индентация вложенных ассоц.массивов
 {
-    foreach ($array as $key => $value) {
-        if (isAssoc($value)) {
-            $result['  ' . $key] = getChildren($value);
-        } else {
-            $result['  ' . $key] = $value;
-        }
-    }
-    return $result;
+    $newKeys = array_map(function ($k, $v) {
+            return '  ' . $k;
+    }, array_keys($array), $array);
+    $newValues = array_map(function ($v) {
+        return (isAssoc($v)) ? getChildren($v) : $v;
+    }, $array);
+    return array_combine($newKeys, $newValues);
 }
 
 function buildDiff(array $array1, array $array2)
