@@ -37,11 +37,11 @@ function buildDiff(array $array1, array $array2)
             if ((isAssoc($array1[$key])) && (isAssoc($array2[$key]))) {
                 return buildDiff($array1[$key], $array2[$key]);
             } elseif (isAssoc($array1[$key])) {
-                return [getChildren($array1[$key]), $array2[$key]];
+                return [getChildren($array1[$key]), normValue($array2[$key])];
             } elseif (isAssoc($array2[$key])) {
-                return [$array1[$key], getChildren($array2[$key])];
+                return [normValue($array1[$key]), getChildren($array2[$key])];
             } elseif (($value === $array2[$key]) or (is_array($value))) {
-                return $value;
+                return normValue($value);
             } else {
                 return normValue($value) . "\n" . normValue($array2[$key]);
             }
@@ -49,7 +49,7 @@ function buildDiff(array $array1, array $array2)
             if (isAssoc($array1[$key])) {
                 return getChildren($array1[$key]);
             } else {
-                return $value;
+                return normValue($value);
             }
         }
     }, array_keys($array1), $array1);
