@@ -5,6 +5,8 @@ namespace Differ\Differ;
 use Gendiff\Parsers;
 use Gendiff\Formatters;
 
+use function Functional\sort;
+
 function gendiff(string $pathToFile1, string $pathToFile2, string $format = 'stylish')
 {
     $inputArr1 = Parsers\parseToArray($pathToFile1);
@@ -54,11 +56,11 @@ function buildDiff(array $array1, array $array2)
         }
     }, array_keys($array1), $array1);
     $preResultPart1 = array_combine(mendArray($preResultKeys), mendArray($preResultValues));
-    $preResultPart2Keys = array_map(function ($key, $value) use ($array1, $array2) {
+    $preResultPart2Keys = array_map(function ($key) use ($array1) {
         if (!array_key_exists($key, $array1)) {
                 return $key . '0+';
         }
-    }, array_keys($array2), $array2);
+    }, array_keys($array2));
     $preResultPart2Values = array_map(function ($key, $value) use ($array1, $array2) {
         if (!array_key_exists($key, $array1)) {
             if (isAssoc($array2[$key])) {
@@ -70,13 +72,15 @@ function buildDiff(array $array1, array $array2)
     }, array_keys($array2), $array2);
     $preResultPart2 = array_filter(array_combine(mendArray($preResultPart2Keys), mendArray($preResultPart2Values)), fn($value) => !is_null($value)); // phpcs:ignore
     $preResultNew = array_merge($preResultPart1, $preResultPart2);
-    ksort($preResultNew);
+    $preResultNewKeys = array_keys($preResultNew);
+    $preResultNewKeysSorted = sort($preResultNewKeys, fn ($left, $right) => strcmp($left, $right));
+    $preResultNewSorted = array_merge(array_flip($preResultNewKeysSorted), $preResultNew);
     $resultNewKeys = array_map(function ($key, $value) {
         $prefix = $key[-1];
         $keyNew = $prefix . " " . substr($key, 0, -2);
         return $keyNew;
-    }, array_keys($preResultNew), $preResultNew);
-    $newResult = array_combine($resultNewKeys, $preResultNew);
+    }, array_keys($preResultNewSorted), $preResultNewSorted);
+    $newResult = array_combine($resultNewKeys, $preResultNewSorted);
     return $newResult;
 }
 
