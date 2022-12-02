@@ -19,17 +19,16 @@ function iter(array $input, string $path = '')
         $previousValue = (is_array($value) && array_key_exists('+other value+', $value)) ? normalizeValue($value['+other value+']) : null; // phpcs:ignore
         if ((Misc\isAssoc($value)) and ($key[0] === " ")) {
             $pathExtended = $path . $currentKey . ".";
-            $string = iter($value, $pathExtended);
+            return iter($value, $pathExtended);
         } elseif (is_array($value) && array_key_exists('+removeThisLine+', $value)) {
-            $string = "";
+            return "";
         } elseif (is_array($value) && array_key_exists('+other value+', $value)) {
-            $string = "Property '{$path}{$currentKey}' was updated. From {$previousValue} to {$currentValue}";
+            return "Property '{$path}{$currentKey}' was updated. From {$previousValue} to {$currentValue}";
         } elseif ($key[0] === "+") {
-            $string = "Property '{$path}{$currentKey}' was added with value: {$currentValue}";
+            return "Property '{$path}{$currentKey}' was added with value: {$currentValue}";
         } elseif ($key[0] === "-") {
-            $string = "Property '{$path}{$currentKey}' was removed";
+            return "Property '{$path}{$currentKey}' was removed";
         }
-        return $string;
     }, array_keys($input), $input);
     $string = implode(PHP_EOL, array_filter(Misc\flatten($result)));
     return $string;
