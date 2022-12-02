@@ -31,7 +31,6 @@ function iter(array $array, string $prefix, int $prefixCount, string $previousSt
                 $string = "{$realPrefix}\"{$realKey}\": {\n{$childrenPrefix}\"status\": \"{$status}\",\n{$childrenPrefix}\"value\": {\n{$updatedChildrenPrefix}\"before\": {$realPreviousValue},\n{$updatedChildrenPrefix}\"after\": {$realValue}\n{$childrenPrefix}}"; // phpcs:ignore 
             } else {
                 $string = "{$realPrefix}\"{$realKey}\": {\n{$childrenPrefix}\"status\": \"{$status}\",\n{$childrenPrefix}\"value\": "; // phpcs:ignore 
-//                $previousItem = (is_array($value)) ? [$realKey, '[complex value]'] : [$realKey, $value];
                 $string .= (Misc\isAssoc($value))  ? "{\n" . iter($value, $prefix, $prefixCount + 4, $status) . "\n{$childrenPrefix}}" : "{$realValue}"; //phpcs:ignore 
             }
             $string .= "\n{$realPrefix}},";

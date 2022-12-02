@@ -31,8 +31,7 @@ function iter(array $input, string $path = '')
         }
         return $string;
     }, array_keys($input), $input);
-    $result = array_filter(Misc\flatten($result));
-    $string = implode(PHP_EOL, $result);
+    $string = implode(PHP_EOL, array_filter(Misc\flatten($result)));
     return $string;
 }
 
