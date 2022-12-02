@@ -19,12 +19,13 @@ function iter(array $array, string $prefix, int $prefixCount)
     $realPrefix = str_repeat($prefix, $prefixCount);
     $closingBracketPrefix = str_repeat($prefix, $prefixCount - 2);
     $formattedArray = array_map(function ($key, $value) use ($realPrefix, $prefix, $prefixCount) {
-        if (!is_array($value)) {
-            $formattedValue = (is_bool($value)) ? var_export($value, true) : $value;
+        $realValue = (is_array($value) && array_key_exists('+value+', $value)) ? $value['+value+'] : $value;
+        if (!is_array($realValue)) {
+            $formattedValue = (is_bool($realValue)) ? var_export($realValue, true) : $realValue;
             $formattedLine = "{$realPrefix}{$key}: {$formattedValue}\n";
         } else {
             $newPrefixCount = $prefixCount + 4;
-            $formattedValue = iter($value, $prefix, $newPrefixCount);
+            $formattedValue = iter($realValue, $prefix, $newPrefixCount);
             $formattedLine = "{$realPrefix}{$key}: {$formattedValue}";
         }
         return $formattedLine;

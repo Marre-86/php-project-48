@@ -18,24 +18,3 @@ function flatten(array $tree)
     }, []);
     return $result;
 }
-
-function removeRedundantItems(array $input)
-{
-    $arrMended = array_reduce($input, function ($acc, $item) {
-        return array_merge($acc, (strstr($item, PHP_EOL) !== false) ? explode("\n", $item) : [$item]);
-    }, []);
-    $wordsArrays = array_map(fn($line) => explode(" ", $line), $arrMended);
-    $lineNumber = 0;
-    $wordsArraysFiltered = array_reduce($wordsArrays, function ($acc, $line) use ($wordsArrays, &$lineNumber) {
-        $accNew = $acc;
-        if ((isset($wordsArrays[$lineNumber + 1][1])) and ($wordsArrays[$lineNumber + 1][1] !== $line[1])) {
-            $accNew[] = $line;
-        } elseif ($lineNumber === count($wordsArrays) - 1) {
-            $accNew[] = $line;
-        }
-        $lineNumber++;
-        return $accNew;
-    }, []);
-    $result = array_map(fn($line) => implode(" ", $line), $wordsArraysFiltered);
-    return $result;
-}

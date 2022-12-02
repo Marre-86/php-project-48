@@ -6,31 +6,33 @@ use Gendiff\Misc;
 
 function plain(array $input)
 {
-    return iter($input, '', [null, null]);
+    return iter($input);
 }
 
-function iter(array $input, string $path, array $previous)
+function iter(array $input, string $path = '')
 {
-    $result = array_map(function ($key, $value) use ($path, &$previous) {
+    $result = array_map(function ($key, $value) use ($path) {
         $string = null;
         $currentKey = substr(strval($key), 2);              // отбрасываем служебные первые два символа
-        $currentValue = normalizeValue($value);
+        $realValue = (is_array($value) && array_key_exists('+value+', $value)) ? $value['+value+'] : $value;
+        $currentValue = normalizeValue($realValue);
+        $previousValue = (is_array($value) && array_key_exists('+other value+', $value)) ? normalizeValue($value['+other value+']) : null; // phpcs:ignore
         if ((Misc\isAssoc($value)) and ($key[0] === " ")) {
             $pathExtended = $path . $currentKey . ".";
-            $newPrevious = (is_array($value)) ? [$currentKey, '[complex value]'] : [$currentKey, $currentValue];
-            $string = iter($value, $pathExtended, $newPrevious);
-        } elseif ($previous[0] === $currentKey) {
-            $string = "Property '{$path}{$currentKey}' was updated. From {$previous[1]} to {$currentValue}";
+            $string = iter($value, $pathExtended);
+        } elseif (is_array($value) && array_key_exists('+removeThisLine+', $value)) {
+            $string = "";
+        } elseif (is_array($value) && array_key_exists('+other value+', $value)) {
+            $string = "Property '{$path}{$currentKey}' was updated. From {$previousValue} to {$currentValue}";
         } elseif ($key[0] === "+") {
             $string = "Property '{$path}{$currentKey}' was added with value: {$currentValue}";
         } elseif ($key[0] === "-") {
             $string = "Property '{$path}{$currentKey}' was removed";
         }
-        $previous = (is_array($value)) ? [$currentKey, '[complex value]'] : [$currentKey, $currentValue]; // phpcs:ignore
         return $string;
     }, array_keys($input), $input);
-    $result = Misc\removeRedundantItems(array_filter(Misc\flatten($result)));
-    $string = implode("\n", $result);
+    $result = array_filter(Misc\flatten($result));
+    $string = implode(PHP_EOL, $result);
     return $string;
 }
 

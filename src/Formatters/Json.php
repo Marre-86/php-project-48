@@ -6,7 +6,7 @@ use Gendiff\Misc;
 
 function json(array $input, string $replacer = ' ', int $margin = 2)
 {
-    $mainBody = iter($input, $replacer, $margin, [null, null], "");
+    $mainBody = iter($input, $replacer, $margin);
     $mainBodyWithBrackets = "{\n" . $mainBody . "\n}\n";
     $mainBodyTrimmed = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $mainBodyWithBrackets) ?? "false";
         // выяснилось что json_decode делает всю работу по отсеиванию первых элементов с тем же key
@@ -16,23 +16,23 @@ function json(array $input, string $replacer = ' ', int $margin = 2)
     return $resultString;
 }
 
-function iter(array $array, string $prefix, int $prefixCount, array $previousItem, string $previousStatus)
+function iter(array $array, string $prefix, int $prefixCount, string $previousStatus = "")
 {
-    $result = array_map(function ($key, $value) use ($prefix, $prefixCount, &$previousItem, &$previousStatus) {
+    $result = array_map(function ($key, $value) use ($prefix, $prefixCount, &$previousStatus) {
         $realPrefix = str_repeat($prefix, $prefixCount);
         $childrenPrefix = str_repeat($prefix, $prefixCount + 2);
         $realKey = substr($key, 2);
-        $realValue = normalizeValue($value, $prefix, $prefixCount);
-        $status = ($realKey === $previousItem[0]) ? "updated" : getStatus($key);
+        $realValue = (is_array($value) && array_key_exists('+value+', $value)) ? normalizeValue($value['+value+'], $prefix, $prefixCount) : normalizeValue($value, $prefix, $prefixCount); //phpcs:ignore
+        $status = (is_array($value) && array_key_exists('+value+', $value)) ? "updated" : getStatus($key);
         if (($previousStatus !== "removed") and ($previousStatus !== "added")) {
             if ($status === "updated") {
                 $updatedChildrenPrefix = str_repeat($prefix, $prefixCount + 4);
-                $realPreviousValue = normalizeValue($previousItem[1], $prefix, $prefixCount);
+                $realPreviousValue = normalizeValue($value['+other value+'] ?? "+rmvThisLine+", $prefix, $prefixCount);
                 $string = "{$realPrefix}\"{$realKey}\": {\n{$childrenPrefix}\"status\": \"{$status}\",\n{$childrenPrefix}\"value\": {\n{$updatedChildrenPrefix}\"before\": {$realPreviousValue},\n{$updatedChildrenPrefix}\"after\": {$realValue}\n{$childrenPrefix}}"; // phpcs:ignore 
             } else {
                 $string = "{$realPrefix}\"{$realKey}\": {\n{$childrenPrefix}\"status\": \"{$status}\",\n{$childrenPrefix}\"value\": "; // phpcs:ignore 
-                $previousItem = (is_array($value)) ? [$realKey, '[complex value]'] : [$realKey, $value];
-                $string .= (Misc\isAssoc($value))  ? "{\n" . iter($value, $prefix, $prefixCount + 4, $previousItem, $status) . "\n{$childrenPrefix}}" : "{$realValue}"; //phpcs:ignore 
+//                $previousItem = (is_array($value)) ? [$realKey, '[complex value]'] : [$realKey, $value];
+                $string .= (Misc\isAssoc($value))  ? "{\n" . iter($value, $prefix, $prefixCount + 4, $status) . "\n{$childrenPrefix}}" : "{$realValue}"; //phpcs:ignore 
             }
             $string .= "\n{$realPrefix}},";
         } else {

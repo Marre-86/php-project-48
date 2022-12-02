@@ -39,19 +39,25 @@ function buildDiff(array $array1, array $array2)
             if ((isAssoc($array1[$key])) && (isAssoc($array2[$key]))) {
                 return buildDiff($array1[$key], $array2[$key]);
             } elseif (isAssoc($array1[$key])) {
-                return [getChildren($array1[$key]), normValue($array2[$key])];
+                return [['+value+' => getChildren($array1[$key]), '+removeThisLine+' => 'yes'],
+                        ['+value+' => normValue($array2[$key]), '+other value+' => getChildren($array1[$key])]
+                       ];
             } elseif (isAssoc($array2[$key])) {
-                return [normValue($array1[$key]), getChildren($array2[$key])];
+                return [['+value+' => normValue($array1[$key]), '+removeThisLine+' => 'yes'],
+                        ['+value+' => getChildren($array2[$key]), '+other value+' => normValue($array1[$key])]
+                       ];
             } elseif (($value === $array2[$key]) or (is_array($value))) {
-                return normValue($value);
+                  return normValue($value);
             } else {
-                return normValue($value) . "\n" . normValue($array2[$key]);
+                return [['+value+' => normValue($value), '+removeThisLine+' => 'yes'],
+                        ['+value+' => normValue($array2[$key]), '+other value+' => normValue($value)]
+                       ];
             }
         } else {
             if (isAssoc($array1[$key])) {
                 return getChildren($array1[$key]);
             } else {
-                return normValue($value);
+                  return normValue($value);
             }
         }
     }, array_keys($array1), $array1);
@@ -66,7 +72,7 @@ function buildDiff(array $array1, array $array2)
             if (isAssoc($array2[$key])) {
                 return getChildren($array2[$key]);
             } else {
-                return normValue($value);
+                  return normValue($value);
             }
         }
     }, array_keys($array2), $array2);
@@ -118,9 +124,7 @@ function mendArray(array $input)
         if (!is_array($item)) {
             return array_merge($acc, (strstr($item, PHP_EOL) !== false) ? explode("\n", $item) : [$item]);
         } else {
-            if ((array_key_exists(0, $item)) and ((count($item) === 2) and isAssoc($item[0]) and (!is_array($item[1])))) {  // phpcs:ignore
-                return array_merge($acc, [$item[0]], [$item[1]]);
-            } elseif ((array_key_exists(0, $item)) and ((count($item) === 2) and isAssoc($item[1]) and (!is_array($item[0])))) { // phpcs:ignore
+            if ((array_key_exists(0, $item)) and ((count($item) === 2) and isAssoc($item[0]) and (isAssoc($item[1])))) {  // phpcs:ignore
                 return array_merge($acc, [$item[0]], [$item[1]]);
             } else {
                 return array_merge($acc, [$item]);
