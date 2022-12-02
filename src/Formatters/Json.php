@@ -28,19 +28,18 @@ function iter(array $array, string $prefix, int $prefixCount, string $previousSt
             if ($status === "updated") {
                 $updatedChildrenPrefix = str_repeat($prefix, $prefixCount + 4);
                 $realPreviousValue = normalizeValue($value['+other value+'] ?? "+rmvThisLine+", $prefix, $prefixCount);
-                $string = "{$realPrefix}\"{$realKey}\": {\n{$childrenPrefix}\"status\": \"{$status}\",\n{$childrenPrefix}\"value\": {\n{$updatedChildrenPrefix}\"before\": {$realPreviousValue},\n{$updatedChildrenPrefix}\"after\": {$realValue}\n{$childrenPrefix}}"; // phpcs:ignore 
+                $preString = "{$realPrefix}\"{$realKey}\": {\n{$childrenPrefix}\"status\": \"{$status}\",\n{$childrenPrefix}\"value\": {\n{$updatedChildrenPrefix}\"before\": {$realPreviousValue},\n{$updatedChildrenPrefix}\"after\": {$realValue}\n{$childrenPrefix}}"; // phpcs:ignore 
             } else {
-                $string = "{$realPrefix}\"{$realKey}\": {\n{$childrenPrefix}\"status\": \"{$status}\",\n{$childrenPrefix}\"value\": "; // phpcs:ignore 
-                $string .= (Misc\isAssoc($value))  ? "{\n" . iter($value, $prefix, $prefixCount + 4, $status) . "\n{$childrenPrefix}}" : "{$realValue}"; //phpcs:ignore 
+                $prePreString = "{$realPrefix}\"{$realKey}\": {\n{$childrenPrefix}\"status\": \"{$status}\",\n{$childrenPrefix}\"value\": "; // phpcs:ignore 
+                $preString = $prePreString .((Misc\isAssoc($value))  ? "{\n" . iter($value, $prefix, $prefixCount + 4, $status) . "\n{$childrenPrefix}}" : "{$realValue}"); //phpcs:ignore 
             }
-            $string .= "\n{$realPrefix}},";
+            $string = $preString . "\n{$realPrefix}},";
         } else {
             $string = "{$realPrefix}\"{$realKey}\": {$realValue},";
         }
         return $string;
     }, array_keys($array), $array);
-    $result = implode("\n", $result);
-    return rtrim($result, ",");
+    return rtrim(implode("\n", $result), ",");
 }
 
 function normalizeValue(mixed $value, string $prefix, int $prefixCount)
@@ -54,8 +53,7 @@ function normalizeValue(mixed $value, string $prefix, int $prefixCount)
         $prefixLevel2 = str_repeat($prefix, $prefixCount + 4);
         $closingBracket = "{$prefixLevel1}]";
         $mainBody = array_reduce($value, function ($acc, $item) use ($prefixLevel2) {
-            $acc .= "{$prefixLevel2}\"{$item}\",\n";
-            return $acc;
+            return $acc . "{$prefixLevel2}\"{$item}\",\n";
         }, "");
         $mainBodyNoLastComma = substr_replace($mainBody, '', -2, 1);
         $normalizedValue = $openingBracket . $mainBodyNoLastComma . $closingBracket;
